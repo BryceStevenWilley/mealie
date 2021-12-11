@@ -3,7 +3,7 @@ import { ReportSummary } from "./group-reports";
 
 const prefix = "/api";
 
-export type SupportedMigration = "nextcloud" | "chowdown" | "mealie_alpha" | "paprika";
+export type SupportedMigration = "nextcloud" | "chowdown" | "mealie_alpha" | "paprika" | "openeats";
 
 export interface MigrationPayload {
   addMigrationTag: boolean;

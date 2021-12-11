@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Tuple, Union
 from uuid import UUID
 
 from pydantic import UUID4
@@ -31,7 +32,13 @@ class BaseMigrator(BaseService):
     helpers: DatabaseMigrationHelpers
 
     def __init__(
-        self, archive: Path, db: AllRepositories, session, user_id: UUID4, group_id: UUID, add_migration_tag: bool
+        self,
+        archive: Union[Path, str],
+        db: AllRepositories,
+        session,
+        user_id: UUID4,
+        group_id: UUID,
+        add_migration_tag: bool,
     ):
         self.archive = archive
         self.db = db
@@ -157,14 +164,14 @@ class BaseMigrator(BaseService):
     def rewrite_alias(self, recipe_dict: dict) -> dict:
         """A helper function to reassign attributes by an alias using a list
         of MigrationAlias objects to rewrite the alias attribute found in the recipe_dict
-        to a
+        to a key used by mealie. Uses self.key_aliases (a list of MigrationAliases).
 
         Args:
-            recipe_dict (dict): [description]
-            key_aliases (list[MigrationAlias]): [description]
+            recipe_dict (dict): the recipe dictionary, from the other application. Mutated
 
         Returns:
-            dict: [description]
+            dict: recipe_dict, but the keys are changed from the alias to the mealie keys
+                  according to the MigrationAlias objects
         """
         if not self.key_aliases:
             return recipe_dict
