@@ -202,5 +202,6 @@ class BaseMigrator(BaseService):
             pass
 
         recipe_dict = cleaner.clean(recipe_dict, url=recipe_dict.get("org_url", None))
+        print(recipe_dict)
 
         return Recipe(**recipe_dict)
