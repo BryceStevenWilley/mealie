@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 from uuid import UUID
 
 from pydantic import UUID4
@@ -26,7 +26,7 @@ class BaseMigrator(BaseService):
     key_aliases: list[MigrationAlias]
 
     report_entries: list[ReportEntryCreate]
-    report_id: int
+    report_id: UUID4
     report: ReportOut
 
     helpers: DatabaseMigrationHelpers
@@ -96,7 +96,7 @@ class BaseMigrator(BaseService):
 
         self.db.group_reports.update(self.report.id, self.report)
 
-    def migrate(self, report_name: str) -> ReportSummary:
+    def migrate(self, report_name: str) -> Optional[ReportSummary]:
         self._create_report(report_name)
         self._migrate()
         self._save_all_entries()
@@ -130,7 +130,7 @@ class BaseMigrator(BaseService):
                 recipe.recipe_category = self.helpers.get_or_set_category(x.name for x in recipe.recipe_category)
 
             if self.add_migration_tag:
-                recipe.tags.append(migration_tag)
+                recipe.tags.append(migration_tag)  # type: ignore
 
             exception = ""
             status = False
@@ -202,6 +202,5 @@ class BaseMigrator(BaseService):
             pass
 
         recipe_dict = cleaner.clean(recipe_dict, url=recipe_dict.get("org_url", None))
-        print(recipe_dict)
 
         return Recipe(**recipe_dict)

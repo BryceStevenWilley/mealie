@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Generic, TypeVar, Union
+from typing import Any, Generic, Optional, TypeVar, Union
 
 from pydantic import UUID4, BaseModel
 from sqlalchemy import func
@@ -152,7 +152,9 @@ class RepositoryGeneric(Generic[T, D]):
         filter = self._filter_builder(**{match_key: match_value})
         return self.session.query(self.sql_model).filter_by(**filter).one()
 
-    def get_one(self, value: str | int | UUID4, key: str = None, any_case=False, override_schema=None) -> T | None:
+    def get_one(
+        self, value: str | int | UUID4, key: Optional[str] = None, any_case=False, override_schema=None
+    ) -> T | None:
         key = key or self.primary_key
 
         q = self.session.query(self.sql_model)
@@ -172,7 +174,12 @@ class RepositoryGeneric(Generic[T, D]):
         return eff_schema.from_orm(result)
 
     def get(
-        self, match_value: str | int | UUID4, match_key: str = None, limit=1, any_case=False, override_schema=None
+        self,
+        match_value: str | int | UUID4,
+        match_key: Optional[str] = None,
+        limit=1,
+        any_case=False,
+        override_schema=None,
     ) -> T | list[T] | None:
         """Retrieves an entry from the database by matching a key/value pair. If no
         key is provided the class objects primary key will be used to match against.
@@ -298,7 +305,7 @@ class RepositoryGeneric(Generic[T, D]):
     def _count_attribute(
         self,
         attribute_name: str,
-        attr_match: str = None,
+        attr_match: Optional[str] = None,
         count=True,
         override_schema=None,
     ) -> Union[int, list[T]]:
@@ -316,8 +323,8 @@ class RepositoryGeneric(Generic[T, D]):
     def create_many(self, documents: list[T]) -> list[T]:
         new_documents = []
         for document in documents:
-            document = document if isinstance(document, dict) else document.dict()
-            new_document = self.sql_model(session=self.session, **document)  # type: ignore
+            document_dict = document if isinstance(document, dict) else document.dict()
+            new_document = self.sql_model(session=self.session, **document_dict)  # type: ignore
             new_documents.append(new_document)
 
         self.session.add_all(new_documents)

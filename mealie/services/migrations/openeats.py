@@ -1,7 +1,5 @@
 import requests
 
-from mealie.db.database import Database
-
 from ._migration_base import BaseMigrator
 from .utils.migration_alias import MigrationAlias
 from .utils.migration_helpers import scrape_image
@@ -11,12 +9,12 @@ def tag_to_str(tags: list[dict]):
     if not isinstance(tags, list):
         return None
     if tags:
-        return [x.get("title").strip() for x in tags]
+        return [x["title"].strip() for x in tags]
 
 
 class OpenEatsMigrator(BaseMigrator):
-    def __init__(self, archive: str, db: Database, session, user_id: int, group_id: int, add_migration_tag: bool):
-        super().__init__(archive, db, session, user_id, group_id, add_migration_tag)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.key_aliases = [
             MigrationAlias(key="name", alias="title", func=None),
@@ -31,7 +29,7 @@ class OpenEatsMigrator(BaseMigrator):
         If not, we default to using HTTPS
         """
         # Get all of the recipes from the given URL, assuming it works.
-        base_url = self.archive
+        base_url = str(self.archive)
         if base_url.endswith("api/v1/recipe/recipes/"):
             api_url = base_url
         elif base_url.endswith("/"):
@@ -59,12 +57,13 @@ class OpenEatsMigrator(BaseMigrator):
 
         all_recipes = []
         for oe_recipe in existing_recipes:
-            print(oe_recipe)
+            # print(oe_recipe)
             recipe_new = self.clean_recipe_dictionary(oe_recipe)
-            print(recipe_new)
+            # print(recipe_new)
             all_recipes.append(recipe_new)
 
         all_statuses = self.import_recipes_to_database(all_recipes)
+        # print(all_statuses)
 
-        for oe_recipe in existing_recipes:
-            scrape_image(oe_recipe)
+        for oe_recipe, status in zip(existing_recipes, all_statuses):
+            scrape_image(oe_recipe.get("photo"), status[1])

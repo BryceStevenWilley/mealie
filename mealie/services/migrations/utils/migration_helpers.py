@@ -90,11 +90,6 @@ def import_image(src: Path, recipe_id: UUID4):
     data_service.write_image(src, src.suffix)
 
 
-def scrape_image(url: str, dest_slug: str):
-    """Read the successful migrations attribute and for each import the image
-    appropriately into the image directory. Minification is done in mass
-    after the migration occurs.
-    """
+def scrape_image(url: str, recipe_id: UUID4):
     data_service = RecipeDataService(recipe_id=recipe_id)
-    image.scrape_image(url, dest_slug)
-    data_service.write_image(src, src.suffix)
+    data_service.scrape_image(url)

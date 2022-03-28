@@ -42,7 +42,7 @@ class ChowdownMigrator(BaseMigrator):
             for slug, recipe_id, status in results:
                 if status:
                     try:
-                        original_image = recipe_lookup.get(slug).image
+                        original_image = recipe_lookup[slug].image
                         cd_image = image_dir.joinpath(original_image)
                     except StopIteration:
                         continue

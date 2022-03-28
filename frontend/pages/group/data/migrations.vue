@@ -29,7 +29,7 @@
           </v-treeview>
         </v-card-text>
 
-        <v-card-title class="mt-0"> Upload File </v-card-title>
+        <v-card-title class="mt-0"> {{content.upload_text}} </v-card-title>
         <v-card-text>
           <AppButtonUpload
             accept=".zip"
@@ -76,6 +76,7 @@ const MIGRATIONS = {
   chowdown: "chowdown",
   paprika: "paprika",
   mealie: "mealie_alpha",
+  openeats: "openeats",
 };
 
 export default defineComponent({
@@ -105,6 +106,10 @@ export default defineComponent({
       {
         text: "Paprika",
         value: MIGRATIONS.paprika,
+      },
+      {
+        text: "OpenEats",
+        value: MIGRATIONS.openeats,
       },
       {
         text: "Mealie",
@@ -144,6 +149,8 @@ export default defineComponent({
             ],
           },
         ],
+        upload_text: "Upload File",
+        upload_input: "",
       },
       [MIGRATIONS.chowdown]: {
         text: "Mealie natively supports the chowdown repository format. Download the code repository as a .zip file and upload it below",
@@ -151,7 +158,7 @@ export default defineComponent({
           {
             id: 1,
             icon: $globals.icons.zip,
-            name: "nextcloud.zip",
+            name: "chowdown.zip",
             children: [
               {
                 id: 2,
@@ -176,10 +183,20 @@ export default defineComponent({
             ],
           },
         ],
+        upload_text: "Upload File",
+        upload_input: "",
       },
       [MIGRATIONS.paprika]: {
         text: "Mealie can import recipes from the Paprika application. Export your recipes from paprika, rename the export extension to .zip and upload it below.",
         tree: false,
+        upload_text: "Upload File",
+        upload_input: "",
+      },
+      [MIGRATIONS.openeats]: {
+        text: "Mealie can import recipes from a live OpenEats application. OpenEats doesn't have a export functionality, but it does have an API that mealie can query to gather recipe data.",
+        tree: false,
+        upload_text: "Enter OpenEats URL",
+        upload_input: "",
       },
       [MIGRATIONS.mealie]: {
         text: "Mealie can import recipes from the Mealie application from a pre v1.0 release. Export your recipes from your old instance, and upload the zip file below. Note that only recipes can be imported from the export.",
@@ -235,6 +252,8 @@ export default defineComponent({
             ],
           },
         ],
+        upload_text: "Upload File",
+        upload_input: "",
       },
     };
 
@@ -285,6 +304,8 @@ export default defineComponent({
         return {
           text: "",
           tree: false,
+          upload_text: "",
+          upload_input: "",
         };
       }
     });
