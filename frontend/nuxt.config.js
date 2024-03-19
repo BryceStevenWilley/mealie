@@ -385,4 +385,8 @@ export default {
     },
     transpile: process.env.NODE_ENV !== "production" ? [/@vue[\\/]composition-api/] : null,
   },
+
+  server: {
+    host: '0.0.0.0'
+  }
 };
